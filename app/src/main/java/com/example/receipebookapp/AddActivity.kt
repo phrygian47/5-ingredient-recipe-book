@@ -24,6 +24,8 @@ class AddActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
 
+
+        // Get edit text field ids
         etRecipeName = findViewById(R.id.etTitle)
         etIngredient1 = findViewById(R.id.etIngredient1)
         etIngredient2 = findViewById(R.id.etIngredient2)
@@ -32,8 +34,12 @@ class AddActivity : AppCompatActivity() {
         etIngredient5 = findViewById(R.id.etIngredient5)
         btnSave = findViewById(R.id.btnSave)
 
+
+        // Initialize Firebase Database
         dbRef = FirebaseDatabase.getInstance().getReference("Recipes")
 
+
+        // set on click funtion for save button
         btnSave.setOnClickListener {
             saveRecipeData()
         }
@@ -49,6 +55,8 @@ class AddActivity : AppCompatActivity() {
         val ingredient4 = etIngredient4.text.toString()
         val ingredient5 = etIngredient5.text.toString()
 
+
+        // Check if all fields have been filled out
         if (recipeName.isEmpty()){
             etRecipeName.error = "Please enter recipe name"
         }
@@ -69,13 +77,18 @@ class AddActivity : AppCompatActivity() {
             etIngredient5.error = "Please fill in all the ingredient fields"
         }
 
+        // Create unique recipe id
         val recipeId = dbRef.push().key!!
 
+        // Create new recipe object
         val recipe = Recipe(recipeId, recipeName, ingredient1, ingredient2,
             ingredient3, ingredient4, ingredient5)
+
+        // add object to Firebase Database
         dbRef.child(recipeId).setValue(recipe).addOnCompleteListener{
             Toast.makeText(this, "Recipe Saved to cloud", Toast.LENGTH_SHORT).show()
 
+            // Clear text so new recipe may be added
             etRecipeName.text.clear()
             etIngredient1.text.clear()
             etIngredient2.text.clear()
@@ -83,6 +96,7 @@ class AddActivity : AppCompatActivity() {
             etIngredient4.text.clear()
             etIngredient5.text.clear()
 
+            // Error listener in case of error.
         }.addOnFailureListener { error ->
             Toast.makeText(this, "Error ${error.message}", Toast.LENGTH_SHORT).show()
         }

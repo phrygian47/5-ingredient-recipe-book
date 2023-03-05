@@ -20,6 +20,8 @@ class FetchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fetch)
 
+
+        // initialize recycler view
         recipeView = findViewById(R.id.rvRecipes)
         tvFetchingData = findViewById(R.id.tvFetchingData)
         recipeView.layoutManager = LinearLayoutManager(this)
@@ -32,23 +34,31 @@ class FetchActivity : AppCompatActivity() {
     }
 
     private fun fetchRecipeData() {
+        //switch visibility to display loading screen
         recipeView.visibility = View.GONE
         tvFetchingData.visibility= View.VISIBLE
 
+        // Get "recipes" database from Firebase
         dbRef = FirebaseDatabase.getInstance().getReference("Recipes")
         dbRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
+                // Clear current list to prevent duplicates
                 recipeList.clear()
-                if(snapshot.exists()){
-                    for(recipeSnap in snapshot.children){
+                if(snapshot.exists()){  // If the database exists and has data
+                    for(recipeSnap in snapshot.children){ // Loop through entire database and add each child to list
                         val recipeData = recipeSnap.getValue(Recipe::class.java)
                         recipeList.add(recipeData!!)
                     }
+                    // Create and inflate recycler view adapter of new list
                     val tempAdaptor = RecipeAdaptor(recipeList)
                     recipeView.adapter = tempAdaptor
 
+
+                    // Add on click function to recycler view
                     tempAdaptor.setOnItemClickListener(object : RecipeAdaptor.OnItemClickListener{
                         override fun onItemClick(position: Int) {
+
+                            // Call new activity and send data as extras.
                             val intent = Intent(this@FetchActivity, RecipeDetails::class.java)
 
                             intent.putExtra("recipeId", recipeList[position].recipeId)
@@ -63,6 +73,7 @@ class FetchActivity : AppCompatActivity() {
 
                     })
 
+                    // Switch visibility once data is loaded.
                     recipeView.visibility = View.VISIBLE
                     tvFetchingData.visibility = View.GONE
                 }

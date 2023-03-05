@@ -16,17 +16,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Get button ids from XML
         btnAdd = findViewById(R.id.btnAdd)
         btnView = findViewById(R.id.btnView)
 
+        // Add on click functions to each button
         btnAdd.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)   // Start add activity
         }
 
         btnView.setOnClickListener {
             val intent = Intent(this, FetchActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)       // start fetch activity
         }
 
 
